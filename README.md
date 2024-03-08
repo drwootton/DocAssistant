@@ -33,7 +33,7 @@ I wrote this program on a Linux system with a RTX 3060 and RTX 4070 GPU. Since i
 
 ## Usage
 1. cd to the top level directory of your cloned copy of this repository
-2. Activate the python virtual environment ```. benv/bin/activate```
+2. Activate the python virtual environment ```. venv/bin/activate```
 3. Start this program ```python main.py```
 4. The main screen should appear
 
