@@ -202,7 +202,8 @@ class ModelDialog(QDialog):
             settings.setValue('ModelWindow.ModelPath', path)
             settings.setValue('ModelWindow.ModelDirectory', fileInfo.dir().absolutePath())
 
-    # Handle the browse button being clicked, where a direcxtory selection dialog is displayed so the use can select a model overflow directory
+    # Handle the browse button being clicked, where a direcxtory selection dialog is displayed so the use can select a model overflow
+    # directory
     @Slot(bool)
     def onModelOverflow(self, checked):
         settings = QSettings()
@@ -213,8 +214,8 @@ class ModelDialog(QDialog):
             settings.setValue('ModelWindow.ModelOverflowDirectory', path)
             settings.setValue('ModelWindow.ModelOverflowDirectory', path)
 
-    # Handle the OK button being clicked, where the user has specified all the required information for the profile. Validate dialog parameters
-    # then save the model profile.
+    # Handle the OK button being clicked, where the user has specified all the required information for the profile. Validate dialog
+    # parameters then save the model profile.
     @Slot(bool)
     def onLoad(self):
         if (self._profile is None):
@@ -237,7 +238,8 @@ class ModelDialog(QDialog):
                 QMessageBox.critical(self, 'Invalid Model Overflow Path', f'Model overflow path {overflowPath} is not a directory')
                 return
         if (not self._maxCpuMemoryWidget.text().isnumeric()):
-            QMessageBox.critical(self, 'Invalid CPU Memory', f'Non-numeric value {self._maxCpuMemoryWidget.text()} for CPU Memory specified')
+            QMessageBox.critical(self,
+                                 'Invalid CPU Memory', f'Non-numeric value {self._maxCpuMemoryWidget.text()} for CPU Memory specified')
             return
         for widget in self._gpuWidgets:
             if (not widget.text().isnumeric()):

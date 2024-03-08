@@ -190,7 +190,8 @@ class DocumentsWindow(QFrame):
         for n in range(self._documentCount):
             documents[n] = self._documentsWidget.item(n, 0).data(Qt.UserRole)
         request = LoadDocumentsRequest()
-        request.setDocumentList(documents, self._chunkSizeSlider.value(), self._overlapSlider.value(), self._sentenceTransformerWidget.text().strip())
+        request.setDocumentList(documents, self._chunkSizeSlider.value(), self._overlapSlider.value(),
+                                self._sentenceTransformerWidget.text().strip())
         workerThread = Globals.getWorkerThread(Globals())
         workerThread.enqueue(request)
         self._indexName.setText('')

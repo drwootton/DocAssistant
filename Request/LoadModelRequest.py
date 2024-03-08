@@ -68,8 +68,8 @@ class LoadModelRequest(Request):
         startTime = time.time()
         
         # Set up model parameters
-        # If the model overflows to disk, then the specified directory must contain sufficient space. Otherwise, the python interpreter may fail with a
-        # SIGBUS error.
+        # If the model overflows to disk, then the specified directory must contain sufficient space. Otherwise, the python interpreter
+        # may fail with a SIGBUS error.
         modelFile = None
         files = os.listdir(self._modelPath)
         for f in files:
@@ -93,20 +93,21 @@ class LoadModelRequest(Request):
         if (self._autoDevice):
             Globals().logMessage('Using auto device map')
             params['device_map'] = 'auto'
-            # The MPT-7B models fail to load if the device_map parameter is set to auto with an error sstating the auto mode is not implemented yet.
-            # This can be fixed by making the code change described in https://huggingface.co/mosaicml/mpt-7b/discussions/23
+            # The MPT-7B models fail to load if the device_map parameter is set to auto with an error stating the auto mode is not
+            # implemented yet. This can be fixed by making the code change described in
+            # https://huggingface.co/mosaicml/mpt-7b/discussions/23
             model = AutoGPTQForCausalLM.from_quantized(**params)
         else:
             params['pretrained_model_name_or_path'] = self._modelPath
             quantizeConfig = BaseQuantizeConfig(bits=4, group_size=128, desc_act=False)
             params['quantize_config'] = quantizeConfig
             model = AutoGPTQForCausalLM.from_quantized(**params)
-            params['device_map'] = infer_auto_device_map(model, max_memory=params['max_memory'], no_split_module_classes=model._no_split_modules,
-                                                         dtype=torchDType)
+            params['device_map'] = infer_auto_device_map(model, max_memory=params['max_memory'],
+                                                         no_split_module_classes=model._no_split_modules, dtype=torchDType)
             print('params:', params['device_map'])
         
-        # The MPT-7B models fail to load if the device_map parameter is set to auto with an error sstating the auto mode is not implemented yet.
-        # This can be fixed by making the code change described in https://huggingface.co/mosaicml/mpt-7b/discussions/23
+        # The MPT-7B models fail to load if the device_map parameter is set to auto with an error stating the auto mode is not implemented
+        # yet. This can be fixed by making the code change described in https://huggingface.co/mosaicml/mpt-7b/discussions/23
 
         # Log the mapping of model modules to devices
         devices = {}
@@ -120,8 +121,6 @@ class LoadModelRequest(Request):
             mapString = mapString + f'device: {k}, modules: {v} '
         Globals().logMessage("Model allocations: " + mapString)
 
-        # See https://github.com/pinecone-io/examples/blob/master/generation/llm-field-guide/mpt-7b/mpt-7b-huggingface-langchain.ipynb for loading
-        # Tokenizer required by model. Does AutoTokenizer load the correct one?
         model.eval()
 
         tokenizer = AutoTokenizer.from_pretrained(self._modelPath)
@@ -145,7 +144,9 @@ class LoadModelRequest(Request):
             return
         loadPath = files[0]
         startTime = time.time()
-        model = LlamaCpp(model_path=loadPath, streaming=True, max_tokens=1500, temperature=.001, n_threads=20, n_ctx=2048, callbacks=[ResultCallback()])
+        #model = LlamaCpp(model_path=loadPath, streaming=True, max_tokens=1500, temperature=.001, n_threads=20, n_ctx=2048,
+        #                callbacks=[ResultCallback()])
+        model = LlamaCpp(model_path=loadPath, streaming=True, callbacks=[ResultCallback()])
         elapsedTime = time.time() - startTime
         logMessage = f'Loaded model and tokenizer in {elapsedTime:.3f} seconds'
         Globals().logMessage(logMessage)
@@ -165,7 +166,8 @@ class LoadModelRequest(Request):
             torchDType = torch.float32
         params['torch_dtype'] = torchDType
         config = AutoConfig.from_pretrained(self._modelPath, **params)
-        # Some models, for example MPT models include an attn_config map in their configuration. If present, try to set attn_impl to 'triton'
+        # Some models, for example MPT models include an attn_config map in their configuration. If present, try to set attn_impl to
+        # 'triton'
         if (self._useTriton):
             try:
                 config.attn_config['attn_impl'] = 'triton'
@@ -192,14 +194,15 @@ class LoadModelRequest(Request):
         
         # Set up model parameters
         #params['quantization_config'] = BitsAndBytesConfig(load_in_8bit=self._use8Bit, llm_int8_enable_fp32_cpu_offload=self._useCPU)
-        # If the model overflows to disk, then the specified directory must contain sufficient space. Otherwise, the python interpreter may fail with a
-        # SIGBUS error.
+        # If the model overflows to disk, then the specified directory must contain sufficient space. Otherwise, the python interpreter
+        # may fail with a SIGBUS error.
         if (self._autoDevice):
             Globals().logMessage('Using auto device map')
             params['device_map'] = 'auto'
         else:
             # Set memory limits for determining model map
-            params['device_map'] = infer_auto_device_map(model, max_memory=params['max_memory'], no_split_module_classes=model._no_split_modules, dtype=torchDType)
+            params['device_map'] = infer_auto_device_map(model, max_memory=params['max_memory'],
+                                   no_split_module_classes=model._no_split_modules, dtype=torchDType)
             print('device map:', params['device_map'])
 
         # Set parameters needed to load model
@@ -211,8 +214,8 @@ class LoadModelRequest(Request):
             params['quantization_config'] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type='nf4', bnb_4bit_use_double_quant=True, 
                                                                bnb_4bit_compute_dtype=torch.bfloat16)
 
-        # The MPT-7B models fail to load if the device_map parameter is set to auto with an error sstating the auto mode is not implemented yet.
-        # This can be fixed by making the code change described in https://huggingface.co/mosaicml/mpt-7b/discussions/23
+        # The MPT-7B models fail to load if the device_map parameter is set to auto with an error stating the auto mode is not implemented
+        # yet. This can be fixed by making the code change described in https://huggingface.co/mosaicml/mpt-7b/discussions/23
         model = AutoModelForCausalLM.from_pretrained(self._modelPath, **params)
 
         # Log the mapping of model modules to devices
@@ -227,8 +230,6 @@ class LoadModelRequest(Request):
             mapString = mapString + f'device: {k}, modules: {v} '
         Globals().logMessage("Model allocations: " + mapString)
 
-        # See https://github.com/pinecone-io/examples/blob/master/generation/llm-field-guide/mpt-7b/mpt-7b-huggingface-langchain.ipynb for loading
-        # Tokenizer required by model. Does AutoTokenizer load the correct one?
         model.eval()
 
         tokenizer = AutoTokenizer.from_pretrained(self._modelPath, trust_remote_code=self._trustRemoteCode)

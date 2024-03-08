@@ -58,7 +58,8 @@ class LoadDocumentsRequest(Request):
 
         elapsedTime = time.time() - startTime
         Globals().logMessage(f'Loaded documents in {elapsedTime:.3f} seconds')
-        # Split the text string into chunks small enough that they can be processed in generating the vectorstore and used by the language model.
+        # Split the text string into chunks small enough that they can be processed in generating the vectorstore and used by the language
+        # model.
         textSplitter = RecursiveCharacterTextSplitter(chunk_size=self._chunkSize, chunk_overlap=self._overlap)
         # Split the text into chunks
         Globals().logMessage('Splitting text into chunks')

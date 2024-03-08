@@ -78,7 +78,8 @@ class QueryRequest(Request):
         queryStop = StoppingCriteriaList([QueryStop()])
         Globals().setStopQuery(False)
         # Create the pipeline to process the request
-        pipe = pipeline('text-generation', model=Globals().getModel(), tokenizer=Globals().getTokenizer(), stopping_criteria=queryStop, **params)
+        pipe = pipeline('text-generation', model=Globals().getModel(), tokenizer=Globals().getTokenizer(), stopping_criteria=queryStop,
+                        **params)
         hfPipeline = HuggingFacePipeline(pipeline=pipe)
         chain = load_qa_chain(hfPipeline, chain_type='stuff')
         Globals().logMessage('Starting similarity search')
@@ -92,9 +93,6 @@ class QueryRequest(Request):
         startTime = time.time()
         chainArgs = dict(input_documents=results, question=self._query)
 
-        # Run the chain.run() function in the newly created thread. Note that as of 5/22/2023, there is a bug in the HuggingFace transformers library
-        # that triggers an exception when the thread is run. This bug is solved by applying the code change described in 
-        # https://github.com/huggingface/transformers/pull/23641
         gc.collect()
         torch.cuda.empty_cache()
         thread = Thread(target=chain.run, kwargs=chainArgs)
@@ -129,15 +127,14 @@ class QueryRequest(Request):
         params['top_k'] = self._topK
         params['top_p'] = self._topP 
         params['verbose'] = True
-        params['n_ctx'] = 1024
-        params['n_threads'] = 20
-        params['xxx'] = 'junk'
+        params['n_ctx'] = self._maxNewTokens
         queryStop = StoppingCriteriaList([QueryStop()])
         Globals().setStopQuery(False)
         startTime = time.time()
         Globals().logMessage('Starting query')
         chain = RetrievalQA.from_chain_type(llm=Globals().getModel(), chain_type='stuff', 
-                                            retriever=Globals().getDocumentStore().as_retriever(search_kwargs={'k': self._numMatches}, kwargs=params))
+                                            retriever=Globals().getDocumentStore().as_retriever(search_kwargs={'k': self._numMatches},
+                                                                                                kwargs=params))
         result = chain.run(query=self._query)
         del chain
         chain = None

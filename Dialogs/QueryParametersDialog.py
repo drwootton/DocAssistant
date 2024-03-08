@@ -161,8 +161,8 @@ class QueryParametersDialog(QDialog):
         except ValueError:
             return False
             
-    # Handle request to add or update a queryb profile. Validate the fields in the dialog, and if fields are valid then create a query profile or update
-    # the current profile
+    # Handle request to add or update a queryb profile. Validate the fields in the dialog, and if fields are valid then create a query
+    # profile or update the current profile
     @Slot(bool)
     def onLoad(self):
         if (self._profile is None):
