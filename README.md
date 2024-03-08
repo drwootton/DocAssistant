@@ -42,7 +42,7 @@ I wrote this program on a Linux system with a RTX 3060 and RTX 4070 GPU. Since i
 5. Load the documents you want to query using the **Documents** panel on the right side of the screen. For each document, type the document path in the **Document Path** field or use the **Browse** button to navigate to the document then click the **Add** button. Repeat until you have added all your documents.
 6. Specify the chunk size (number of characters per document chunk) and number of characters to ovelap chunks
 7. After all fields are filled in, click **Load Documents**
-8. Once a set of documents is loaded, yoiu may save the generated index by clicking **Save Document Index** in the **File** menu.
+8. Once a set of documents is loaded, you may save the generated index by clicking **Save Document Index** in the **File** menu.
 9. Create a model profile for each model as needed by clicking the **Add** button in the **Model** pane on the left side of the window and filling in model parameters as needed.
 10. Create one or more query profiles by clicking the **Add** button in the **Prompt** pane on the left side of the window
 11. Load a model by selecting a model from the **Model profile** list in the Model pane and clicking the **Load** button below the list
