@@ -15,4 +15,4 @@ torchvision==0.17.1
 transformers==4.38.2
 
 einops==0.7.0
-protobuf==4.25.3
+protobuf==4.25.8
